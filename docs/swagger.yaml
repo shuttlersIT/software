@@ -1,0 +1,2474 @@
+definitions:
+  models.APIResponse:
+    properties:
+      data:
+        description: Optional data payload
+      error:
+        description: |-
+          Optional error
+          example: Something went wrong
+        type: string
+      message:
+        description: |-
+          The response message
+          example: Success
+        type: string
+    type: object
+  models.AssignedSoftware:
+    properties:
+      assigned_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      software_id:
+        example: 3
+        type: integer
+      source:
+        example: department
+        type: string
+      staff_id:
+        example: 2
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Department:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Engineering
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Software:
+    properties:
+      created_at:
+        type: string
+      description:
+        example: Communication Suite
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: ClickUp
+        type: string
+      type:
+        description: e.g., License, SaaS, etc.
+        example: SaaS
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.SoftwareAssignment:
+    properties:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      scope_id:
+        example: 3
+        type: integer
+      scope_type:
+        description: '"Department", "Team", "Staff"'
+        example: Team
+        type: string
+      software_id:
+        example: 2
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.SoftwareAssignmentLog:
+    properties:
+      action:
+        description: Assigned | Unassigned
+        example: Assigned
+        type: string
+      changed_at:
+        example: "2025-06-11T15:04:05Z"
+        type: string
+      changed_by:
+        example: 2
+        type: integer
+      id:
+        example: 1
+        type: integer
+      software:
+        $ref: '#/definitions/models.Software'
+      software_id:
+        example: 7
+        type: integer
+      staff:
+        $ref: '#/definitions/models.StaffPlain'
+      staff_id:
+        example: 3
+        type: integer
+      updated_at:
+        example: "2025-06-11T15:05:00Z"
+        type: string
+    type: object
+  models.SoftwareDepartmentMatch:
+    properties:
+      created_at:
+        type: string
+      department_id:
+        description: |-
+          DepartmentID is the ID of the department receiving the software
+          example: 3
+        type: integer
+      id:
+        description: |-
+          ID is the unique identifier of the department match
+          example: 1
+        type: integer
+      software_id:
+        description: |-
+          SoftwareID is the ID of the software
+          example: 2
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.SoftwareOrganizationMatch:
+    properties:
+      created_at:
+        type: string
+      id:
+        description: |-
+          ID is the unique identifier of the organization match
+          example: 1
+        type: integer
+      software:
+        allOf:
+        - $ref: '#/definitions/models.Software'
+        description: Software holds detailed software information
+      software_id:
+        description: |-
+          SoftwareID is the ID of the software assigned to the entire organization
+          example: 2
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.SoftwareTeamMatch:
+    properties:
+      created_at:
+        type: string
+      id:
+        description: |-
+          ID is the unique identifier of the team match
+          example: 1
+        example: 1
+        type: integer
+      software:
+        $ref: '#/definitions/models.Software'
+      software_id:
+        description: |-
+          SoftwareID is the ID of the software
+          example: 2
+        example: 2
+        type: integer
+      team:
+        $ref: '#/definitions/models.Team'
+      team_id:
+        description: |-
+          TeamID is the ID of the team receiving the software
+          example: 3
+        example: 3
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Staff:
+    properties:
+      created_at:
+        type: string
+      department:
+        $ref: '#/definitions/models.Department'
+      department_id:
+        example: 2
+        type: integer
+      email:
+        example: john.doe@shuttlers.co
+        type: string
+      first_name:
+        example: John
+        type: string
+      id:
+        example: 1
+        type: integer
+      last_name:
+        example: Doe
+        type: string
+      status:
+        example: Active
+        type: string
+      team:
+        $ref: '#/definitions/models.Team'
+      team_id:
+        example: 5
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.StaffPlain:
+    properties:
+      created_at:
+        type: string
+      department_id:
+        example: 2
+        type: integer
+      email:
+        example: john.doe@shuttlers.co
+        type: string
+      first_name:
+        example: John
+        type: string
+      id:
+        example: 1
+        type: integer
+      last_name:
+        example: Doe
+        type: string
+      status:
+        example: Active
+        type: string
+      team_id:
+        example: 5
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  models.Team:
+    properties:
+      created_at:
+        type: string
+      department:
+        $ref: '#/definitions/models.Department'
+      department_id:
+        example: 2
+        type: integer
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Frontend
+        type: string
+      updated_at:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/assign-software:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Software assignment payload
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssignedSoftware'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.AssignedSoftware'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Assign software to a staff member
+      tags:
+      - Assigned Software
+  /api/assigned-software:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssignedSoftware'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all assigned software records
+      tags:
+      - Assigned Software
+  /api/assigned-software/{id}:
+    delete:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete assigned software and log the unassignment
+      tags:
+      - Assigned Software
+    get:
+      parameters:
+      - description: Assigned Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AssignedSoftware'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a specific assigned software record by ID
+      tags:
+      - Assigned Software
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated assignment
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.AssignedSoftware'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.AssignedSoftware'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update an assigned software record
+      tags:
+      - Assigned Software
+  /api/assigned-software/{id}/force:
+    delete:
+      parameters:
+      - description: Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete an assigned software record
+      tags:
+      - Assigned Software
+  /api/departments:
+    get:
+      parameters:
+      - description: Search by name
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Department'
+            type: array
+      summary: List all departments with filters
+      tags:
+      - Departments
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Department to create
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a new department
+      tags:
+      - Departments
+  /api/departments/{id}:
+    delete:
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a department by ID
+      tags:
+      - Departments
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated department
+        in: body
+        name: department
+        required: true
+        schema:
+          $ref: '#/definitions/models.Department'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Department'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a department by ID
+      tags:
+      - Departments
+  /api/departments/{id}/teams:
+    get:
+      parameters:
+      - description: Department ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Team'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: List teams under a specific department
+      tags:
+      - Departments
+  /api/departments/plain:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Department'
+            type: array
+      summary: List all departments
+      tags:
+      - Departments
+  /api/logs:
+    get:
+      description: Retrieves all software assignment logs with associated staff and
+        software
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software assignment logs
+      tags:
+      - Software Assignment Logs
+    post:
+      consumes:
+      - application/json
+      description: Adds a new log entry for a software assignment action
+      parameters:
+      - description: Software Assignment Log
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareAssignmentLog'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignmentLog'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a software assignment log
+      tags:
+      - Software Assignment Logs
+  /api/logs/{id}:
+    delete:
+      description: Deletes a log entry by ID
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a software assignment log
+      tags:
+      - Software Assignment Logs
+    get:
+      description: Retrieves a single software assignment log by its ID
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignmentLog'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a software assignment log by ID
+      tags:
+      - Software Assignment Logs
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing log entry by ID
+      parameters:
+      - description: Log ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Log
+        in: body
+        name: log
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareAssignmentLog'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignmentLog'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a software assignment log
+      tags:
+      - Software Assignment Logs
+  /api/logs/details:
+    get:
+      description: Retrieves logs with optional filtering by date and search query
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end
+        type: string
+      - description: Search by staff or software name
+        in: query
+        name: search
+        type: string
+      - description: Limit results
+        in: query
+        name: limit
+        type: integer
+      - description: Offset results
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get filtered and paginated logs
+      tags:
+      - Software Assignment Logs
+  /api/logs/software/{id}:
+    get:
+      description: Paginated and filtered logs for a specific software ID
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Search by staff name
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get detailed logs for software
+      tags:
+      - Software Assignment Logs
+  /api/logs/software/{id}/details/raw:
+    get:
+      description: Raw SQL version of software logs query
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Search by staff name
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get raw logs for software
+      tags:
+      - Software Assignment Logs
+  /api/logs/software/{id}/plain:
+    get:
+      description: Retrieves all logs for a specific software ID
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get logs for specific software
+      tags:
+      - Software Assignment Logs
+  /api/logs/staff/{id}:
+    get:
+      description: Retrieves all logs for a specific staff ID
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get logs for specific staff
+      tags:
+      - Software Assignment Logs
+  /api/logs/staff/{id}/details:
+    get:
+      description: Paginated and filtered logs for a given staff ID
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Search by software name
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignmentLog'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get detailed logs for staff
+      tags:
+      - Software Assignment Logs
+  /api/logs/staff/{id}/details/raw:
+    get:
+      description: Raw SQL version of staff logs query
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Search by software name
+        in: query
+        name: search
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get raw logs for staff
+      tags:
+      - Software Assignment Logs
+  /api/software:
+    get:
+      parameters:
+      - description: Search by software name
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Software'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get paginated software with filtering and search
+      tags:
+      - Software
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Software to create
+        in: body
+        name: software
+        required: true
+        schema:
+          $ref: '#/definitions/models.Software'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Software'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create new software
+      tags:
+      - Software
+  /api/software-assignments:
+    get:
+      parameters:
+      - description: Search by software name
+        in: query
+        name: search
+        type: string
+      - description: Filter by scope type (department/team/organization)
+        in: query
+        name: scope_type
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get software assignment rules with software name and filters
+      tags:
+      - Software Assignment Rules
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Software assignment rule
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareAssignment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a new software assignment rule
+      tags:
+      - Software Assignment Rules
+  /api/software-assignments/{id}:
+    delete:
+      parameters:
+      - description: Assignment Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a software assignment rule and revoke related assignments with
+        logging
+      tags:
+      - Software Assignment Rules
+    get:
+      parameters:
+      - description: Software Assignment ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a specific software assignment rule by ID
+      tags:
+      - Software Assignment Rules
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Assignment Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated software assignment rule
+        in: body
+        name: assignment
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareAssignment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareAssignment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update an existing software assignment rule
+      tags:
+      - Software Assignment Rules
+  /api/software-assignments/{id}/force:
+    delete:
+      parameters:
+      - description: Assignment Rule ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content - Delete Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Force delete a software assignment rule (no unassign logging)
+      tags:
+      - Software Assignment Rules
+  /api/software-assignments/plain:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareAssignment'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software assignment rules
+      tags:
+      - Software Assignment Rules
+  /api/software-department-matches:
+    get:
+      description: Retrieves all department-level software matches, optionally filtered
+        by software_id or department_id
+      parameters:
+      - description: Filter by Software ID
+        in: query
+        name: software_id
+        type: integer
+      - description: Filter by Department ID
+        in: query
+        name: department_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareDepartmentMatch'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software department matches
+      tags:
+      - Software Department Matches
+    post:
+      consumes:
+      - application/json
+      description: Creates a new department-level software match
+      parameters:
+      - description: Software Department Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareDepartmentMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareDepartmentMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a software department match
+      tags:
+      - Software Department Matches
+  /api/software-department-matches/{id}:
+    delete:
+      description: Deletes a department-level software match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a software department match
+      tags:
+      - Software Department Matches
+    get:
+      description: Retrieves a single software department match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareDepartmentMatch'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a software department match by ID
+      tags:
+      - Software Department Matches
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing software department match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Software Department Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareDepartmentMatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareDepartmentMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a software department match
+      tags:
+      - Software Department Matches
+  /api/software-department-matches/{id}/revoke:
+    delete:
+      description: Deletes a match and revokes software from all staff in the associated
+        department
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete match and revoke software from department staff
+      tags:
+      - Software Department Matches
+  /api/software-department-matches/auto-assign:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new match and automatically assigns the software to all
+        staff in the department
+      parameters:
+      - description: Software Department Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareDepartmentMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareDepartmentMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create department match with auto-assignment
+      tags:
+      - Software Department Matches
+  /api/software-organization-matches:
+    get:
+      description: Retrieves all organization-level software matches, optionally filtered
+        by software_id
+      parameters:
+      - description: Filter by Software ID
+        in: query
+        name: software_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareOrganizationMatch'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software organization matches
+      tags:
+      - Software Organization Matches
+    post:
+      consumes:
+      - application/json
+      description: Creates a new organization-level match for a software
+      parameters:
+      - description: Software Organization Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareOrganizationMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareOrganizationMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a software organization match
+      tags:
+      - Software Organization Matches
+  /api/software-organization-matches/{id}:
+    delete:
+      description: Deletes a software organization match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a software organization match
+      tags:
+      - Software Organization Matches
+    get:
+      description: Retrieves a single software organization match
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareOrganizationMatch'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a software organization match by ID
+      tags:
+      - Software Organization Matches
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing software organization match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Software Organization Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareOrganizationMatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareOrganizationMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a software organization match
+      tags:
+      - Software Organization Matches
+  /api/software-organization-matches/{id}/revoke:
+    delete:
+      description: Deletes a software organization match and automatically revokes
+        the software from all staff
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete match and revoke software from staff
+      tags:
+      - Software Organization Matches
+  /api/software-organization-matches/auto-assign:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new match and automatically assigns the software to all
+        staff
+      parameters:
+      - description: Software Organization Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareOrganizationMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareOrganizationMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create organization match with auto-assignment
+      tags:
+      - Software Organization Matches
+  /api/software-team-matches:
+    get:
+      description: Retrieves all team-level software matches, optionally filtered
+        by software_id or team_id
+      parameters:
+      - description: Filter by Software ID
+        in: query
+        name: software_id
+        type: integer
+      - description: Filter by Team ID
+        in: query
+        name: team_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SoftwareTeamMatch'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software team matches
+      tags:
+      - Software Team Matches
+    post:
+      consumes:
+      - application/json
+      description: Creates a new software-team association
+      parameters:
+      - description: Software Team Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareTeamMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareTeamMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a software team match
+      tags:
+      - Software Team Matches
+  /api/software-team-matches/{id}:
+    delete:
+      description: Deletes a software-team association by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a software team match
+      tags:
+      - Software Team Matches
+    get:
+      description: Retrieves a specific software team match by its ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareTeamMatch'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a software team match by ID
+      tags:
+      - Software Team Matches
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing software team match by ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated Software Team Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareTeamMatch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SoftwareTeamMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a software team match
+      tags:
+      - Software Team Matches
+  /api/software-team-matches/{id}/revoke:
+    delete:
+      description: Deletes the match and removes the software from all staff in the
+        team
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete match and revoke software from team members
+      tags:
+      - Software Team Matches
+  /api/software-team-matches/auto-assign:
+    post:
+      consumes:
+      - application/json
+      description: Creates a match and assigns the software to all team members
+      parameters:
+      - description: Software Team Match
+        in: body
+        name: match
+        required: true
+        schema:
+          $ref: '#/definitions/models.SoftwareTeamMatch'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SoftwareTeamMatch'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create team match with auto-assignment
+      tags:
+      - Software Team Matches
+  /api/software/{id}:
+    delete:
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete software and revoke all its assignments
+      tags:
+      - Software
+    get:
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Software'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a software item by ID
+      tags:
+      - Software
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Software fields to update
+        in: body
+        name: software
+        required: true
+        schema:
+          $ref: '#/definitions/models.Software'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Software'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update existing software
+      tags:
+      - Software
+  /api/software/{software_id}/assigned-staff:
+    get:
+      parameters:
+      - description: Software ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Search by staff name
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Staff'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get list of staff assigned to a specific software
+      tags:
+      - Software
+  /api/software/plain:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Software'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all software
+      tags:
+      - Software
+  /api/staff:
+    get:
+      parameters:
+      - description: Search keyword (first name, last name, or email)
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Staff'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get staff with filters and pagination
+      tags:
+      - Staff
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Staff object
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.Staff'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a new staff
+      tags:
+      - Staff
+  /api/staff/{id}:
+    delete:
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: No Content - Deletion Success
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete staff by ID (also revokes assigned software)
+      tags:
+      - Staff
+    get:
+      description: Retrieve a single staff member by their unique ID
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get a staff member by ID
+      tags:
+      - Staff
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated staff object
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.Staff'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update staff by ID
+      tags:
+      - Staff
+  /api/staff/{id}/offboard:
+    post:
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Offboard staff (revoke all software, optionally mark as inactive)
+      tags:
+      - Staff
+  /api/staff/{id}/with-software:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated staff object
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.Staff'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update staff and sync software assignments
+      tags:
+      - Staff
+  /api/staff/{staff_id}/assigned-software:
+    get:
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.AssignedSoftware'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get software assigned to a specific staff by ID
+      tags:
+      - Staff
+  /api/staff/{staff_id}/assigned-software/detail:
+    get:
+      parameters:
+      - description: Staff ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Search by software name
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Software'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get detailed software assigned to a specific staff using Software model
+      tags:
+      - Staff
+  /api/staff/plain:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.StaffPlain'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Get all staff
+      tags:
+      - Staff
+  /api/staff/with-software:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Staff object
+        in: body
+        name: staff
+        required: true
+        schema:
+          $ref: '#/definitions/models.Staff'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Staff'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create staff and auto-assign software
+      tags:
+      - Staff
+  /api/teams:
+    get:
+      parameters:
+      - description: Search by name
+        in: query
+        name: search
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Team'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: List all teams with filters and department preload
+      tags:
+      - Teams
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Team object
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/models.Team'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Team'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Create a new team
+      tags:
+      - Teams
+  /api/teams/{id}:
+    delete:
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content - Deletion Success
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Delete a team by ID
+      tags:
+      - Teams
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Team ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated team
+        in: body
+        name: team
+        required: true
+        schema:
+          $ref: '#/definitions/models.Team'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Team'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.APIResponse'
+      summary: Update a team by ID
+      tags:
+      - Teams
+swagger: "2.0"
