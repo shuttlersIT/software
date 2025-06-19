@@ -314,3 +314,41 @@ func GetStaffAssignedToSoftwareWithDetails(c *gin.Context) {
 
 	c.JSON(http.StatusOK, staff)
 }
+
+// GetAllSoftwareNames godoc
+// @Summary Get a list of all software names
+// @Tags Software
+// @Produce json
+// @Success 200 {array} string
+// @Failure 500 {object} models.APIResponse
+// @Router /api/software/names [get]
+func GetAllSoftwareNames(c *gin.Context) {
+	var names []string
+	if err := config.DB.Model(&models.Software{}).Pluck("name", &names).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, names)
+}
+
+// GetAllSoftwareSummaries godoc
+// @Summary Get a list of all software (id and name only)
+// @Tags Software
+// @Produce json
+// @Success 200 {array} models.SoftwareSummary
+// @Failure 500 {object} models.APIResponse
+// @Router /api/software/summaries [get]
+func GetAllSoftwareSummaries(c *gin.Context) {
+	type SoftwareSummary struct {
+		ID   uint   `json:"id"`
+		Name string `json:"name"`
+	}
+
+	var summaries []SoftwareSummary
+	if err := config.DB.Model(&models.Software{}).Select("id", "name").Scan(&summaries).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, summaries)
+}

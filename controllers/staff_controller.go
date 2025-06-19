@@ -20,7 +20,7 @@ import (
 // @Failure 500 {object} models.APIResponse
 // @Router /api/staff/plain [get]
 func GetAllStaff(c *gin.Context) {
-	var staff []models.Staff
+	var staff []models.StaffPlain
 	if err := config.DB.Find(&staff).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -49,7 +49,7 @@ func GetStaffWithDetail(c *gin.Context) {
 	offset := (page - 1) * pageSize
 
 	var staff []models.Staff
-	query := config.DB.Preload("Team")
+	query := config.DB.Preload("Department").Preload("Team")
 
 	if search != "" {
 		query = query.Where("first_name LIKE ? OR last_name LIKE ? OR email LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")

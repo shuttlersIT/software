@@ -53,6 +53,7 @@ func RegisterRoutes() *gin.Engine {
 		// ===== Software Routes =====
 		api.GET("/software/plain", controllers.GetAllSoftware)
 		api.GET("/software", controllers.GetAllSoftwareWithDetail)
+		api.GET("/software/names", controllers.GetAllSoftwareNames)
 		api.GET("/software/:id", controllers.GetSoftwareByID)
 		api.POST("/software", controllers.CreateSoftware)
 		api.PUT("/software/:id", controllers.UpdateSoftware)
