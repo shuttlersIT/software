@@ -48,6 +48,7 @@ func RegisterRoutes() *gin.Engine {
 		// Nested: Staff-related software & logs
 		api.GET("/staff/:id/assigned-software", controllers.GetSoftwareAssignedToStaff)
 		api.GET("/staff/:id/assigned-software/detail", controllers.GetSoftwareAssignedToStaffWithDetails)
+		api.GET("/staff/:id/assigned-software/names", controllers.GetSoftwareNamesAssignedToStaff)
 		api.GET("/staff/:id/logs", controllers.GetAssignmentLogsForStaff)
 
 		// ===== Software Routes =====

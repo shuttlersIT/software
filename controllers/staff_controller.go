@@ -378,3 +378,58 @@ func GetSoftwareAssignedToStaffWithDetails(c *gin.Context) {
 
 	c.JSON(http.StatusOK, softwareList)
 }
+
+// GetSoftwareNamesAssignedToStaff godoc
+// @Summary Get software names assigned to a specific staff
+// @Tags Staff
+// @Produce json
+// @Param id path int true "Staff ID"
+// @Param search query string false "Search by software name"
+// @Param start_date query string false "Start date (YYYY-MM-DD)"
+// @Param end_date query string false "End date (YYYY-MM-DD)"
+// @Param page query int false "Page number"
+// @Param page_size query int false "Page size"
+// @Success 200 {array} string
+// @Failure 400 {object} models.APIResponse
+// @Failure 500 {object} models.APIResponse
+// @Router /api/staff/{id}/assigned-software/names [get]
+func GetSoftwareNamesAssignedToStaff(c *gin.Context) {
+	staffIDParam := c.Param("id")
+	staffID, err := strconv.Atoi(staffIDParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid staff ID"})
+		return
+	}
+
+	search := c.Query("search")
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	offset := (page - 1) * pageSize
+
+	var names []string
+
+	query := config.DB.Table("software").
+		Select("DISTINCT software.name").
+		Joins("JOIN assigned_software ON assigned_software.software_id = software.id").
+		Where("assigned_software.staff_id = ?", staffID)
+
+	if search != "" {
+		query = query.Where("software.name LIKE ?", "%"+search+"%")
+	}
+	if startDate != "" && endDate != "" {
+		query = query.Where("assigned_software.assigned_at BETWEEN ? AND ?", startDate, endDate)
+	}
+
+	err = query.Order("software.name ASC").
+		Limit(pageSize).Offset(offset).
+		Pluck("software.name", &names).Error
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, names)
+}
